@@ -15,11 +15,11 @@ case $opt in
         search
         ;;
 3)
-        echo "Enter username to edit: \c"
-        read unamee
+        modify_Entry
         ;;
 *)
-        echo "Please try again."
+	sleep 1s
+        echo "Exiting. . ."
         ;;
 esac
 }
@@ -39,11 +39,16 @@ read mid
 
 input_conformation()	#Conforming the details after entry.
 {
-echo "Does the Entered information is correct? Select Y|y to continue or anyi other character to re-enter the detais: \c"
+sleep 1s
+echo "\nSelect Y|y to continue or any other character to re-enter the detais: \c"
+echo "Successfully added."
 read conf
 if [ "$conf" = "Y" -o "$conf" = "y" ]
 then
-        echo "$fname:$lname:$mnum:$mid" >> userdetails
+	set `wc -l userdetails`
+	echo $0
+        echo "$1:$fname:$lname:$mnum:$mid" >> userdetails
+	echo "\n"
 else
         new_entry
 fi
@@ -53,12 +58,14 @@ search(){		#Searching the user details in the file
 echo "Enter name or Phone number or E-mail id of the user or even a single phrase: \c"
 read search_item
 column -s":" -t userdetails | grep -i "$search_item"
-echo "\n\n"
+echo "\n"
 main_option
 }
 
 modify_entry()		#To modify the previously entered informations
 {
+echo "Enter user's serial number: \c"
+read unum
 echo "Enter 'A' for modify username.\nEnter 'B' for modify phone number.\nEnter 'C' for modify e-mail address."
 echo "Option [A/B/C]: \c"
 read opt
