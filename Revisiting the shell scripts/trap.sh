@@ -1,5 +1,5 @@
 set -x #Used to verbos the output with corresponding line(s) of execution, good for debugging
-trap "echo system has detected interrup signals >> log" 0 2 3 15 #Trapping interrupt signals
+trap "echo system has detected interrup signals >> log" 0 2 3 15 #Trapping interrupt signals, if any interrupt signals mentioned are detected then notification will save in log file named "log"
 echo "PID for this process is $$" #getting current process(script) PID
 set +x #Removing the verbos output
 count=10
