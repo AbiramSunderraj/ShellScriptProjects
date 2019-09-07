@@ -1,4 +1,4 @@
-#code for displaying specified user details
+#code for displaying specified user and system details
 
 echo "Enter a username: \c"
 
