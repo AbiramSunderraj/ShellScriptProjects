@@ -29,4 +29,4 @@ else    ## If the user name does not exist, then show the message and exist
 fi
 
 
-##next improvement will be log the time difference of user login to current time and some extra functionalities
+##next improvement will be log the difference of user login and some extra functionalities
