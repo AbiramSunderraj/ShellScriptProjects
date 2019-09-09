@@ -1,3 +1,6 @@
-#Backup automation - 08/09/2019
-  
-echo -e "Select the option you need from below.\na. Full Backup\nb. Incremental Backup\nc. Partial Backup"
+#Backup automation - 08/09/2019up
+#set -x
+source ./function.sh
+
+type_select
+location_select
