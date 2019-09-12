@@ -5,19 +5,19 @@ type_select(){ # Select the type of backup. Full, Incremental and Partial
                 'A' | 'B' | 'C' | 'a' | 'b' | 'c' )
                         if [ "$bkup_opt" = 'A' -o "$bkup_opt" = 'a' ]
                         then
-                                echo -e "\nFull Backup Selected. . ."
+                                echo -e "\nSelected Backup Type: FULL"
                                 opt=""
                         elif [ "$bkup_opt" = 'B' -o "$bkup_opt" = 'b' ]
                         then
-                                echo -e "\nIncremental Backup Selected. . ."
+                                echo -e "\n Selected Backup Type: INCREMENTAL"
                                 opt=""
                         else [ "$bkup_opt" = 'C' -o "$bkup_opt" = 'c' ]
-                                echo -e "\nPartial Backup Selected. . ."
+                                echo -e "\nSelected Backup Type: PARTIAL"
                                 opt=""
                         fi
                         ;;
                 *)
-                        echo -e "\nIncorrect Option. Select a correct backup type."
+                        echo -e "\nError : Incorrect Option. Select a correct backup type."
                         type_select
         esac
 }
@@ -28,14 +28,14 @@ lfbkup(){ #Local Full backup, Just copying everything to local drive.
 	echo -e "Backup in progress. . ."
         cp -rfp $src_loc/ $dest_loc
         #archive and extraction concept
-	size=`du -sh $dest_loc`
-	set "$size"
+	#size=`du -sh $dest_loc`  ##If all files are successfully copied into destination location, then this script needs to show the copied file size
+	#set "$size"
         echo -e "Backup process completed. . .\nBackedup $1 files to the destination folder."
 }
 
-libkup(){ #Local Incremental backup, Sync'ing the files in the folders  using rsync
+libkup(){ #Local Incremental backup, Sync'ing the files in the folders using rsync by last modified and accessed time
         echo -e "Backup in progress. . ."
-        #rsync
+        rsync -azh $src_loc/ $dest_loc >> /dev/null 2>&1
         echo -e "Backup process completed. . .\n"
 }
 
@@ -89,7 +89,7 @@ backup_loc(){  ##Backup location selection, Local or cloud.
                         		fi
 					;;
 				* )
-					echo -e "\nWrong Input\n"
+					echo -e "\nError : Wrong Input\n"
 					backup_loc
 					;;
 			esac
@@ -98,7 +98,7 @@ backup_loc(){  ##Backup location selection, Local or cloud.
 		'B' | 'b' )
 			echo -e "\nEnter device location: \c"
                         read dest_loc
-                        echo -e "\nSelected storage type is 'Local Storage'. Device location is '$dest_loc'.\nThis method overwrites the previous duplicate files. Type 'YES' to continue: \c"
+                        echo -e "\nSelected storage type is 'LOCAL STORAGE'. Device location is '$dest_loc'.\nType 'YES' to continue: \c"
                         read ans
                         case $ans in
                                 'YES' | 'Yes' | 'yes' )
@@ -118,7 +118,8 @@ backup_loc(){  ##Backup location selection, Local or cloud.
                         esac
                         ;;
 		*)
-			echo "\nSelect a valid option."
+			echo -e "\nSelect a valid option."
+			backup_loc
 			;;
 		esac
 }
@@ -129,7 +130,7 @@ location_select(){ ##Source path selection to take backup.
 	ls $src_loc >>/dev/null 2>&1
 	if [ "$?" -eq 0 ]
 	then
-	echo -e "\nSpecfied path is: '$src_loc'\nType 'YES' to continue or press any key to re-specify the location again: \c"
+		echo -e "\nSpecfied path is: '$src_loc'\nType 'YES' to continue or press any key to re-specify the location again: \c"
 	read loc_opt
 	case $loc_opt in
 		'YES' | 'Yes' | 'yes' )
@@ -142,7 +143,24 @@ location_select(){ ##Source path selection to take backup.
 			;;
 	esac
 	else
-		echo -e "\nPath does not exist or Root privilages required. Specify the correct path or run with root privilages."
+		echo -e "\nError : Path does not exist, try with different path."
 		location_select
 	fi
 }
+
+
+
+
+
+
+
+
+
+
+
+
+#PTR
+
+#1. Implement path checking for destination location.
+#2. Implement previous records saving.(can think about array and later pass the datas to pssql.)
+#3. 
