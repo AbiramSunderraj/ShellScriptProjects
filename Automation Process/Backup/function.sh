@@ -7,13 +7,16 @@ type_select(){ # Select the type of backup. Full, Incremental and Partial
                         then
                                 echo -e "\nSelected Backup Type: FULL"
                                 opt=""
+				backup_loc				
                         elif [ "$bkup_opt" = 'B' -o "$bkup_opt" = 'b' ]
                         then
                                 echo -e "\n Selected Backup Type: INCREMENTAL"
                                 opt=""
+				backup_loc
                         else [ "$bkup_opt" = 'C' -o "$bkup_opt" = 'c' ]
                                 echo -e "\nSelected Backup Type: PARTIAL"
                                 opt=""
+				backup_loc
                         fi
                         ;;
                 *)
@@ -22,33 +25,49 @@ type_select(){ # Select the type of backup. Full, Incremental and Partial
         esac
 }
 
-################## Actual backup functions ####################
+#################### Actual backup functions ####################
 
 lfbkup(){ #Local Full backup, Just copying everything to local drive.
-	echo -e "Backup in progress. . ."
-        cp -rfp $src_loc/ $dest_loc
-        #archive and extraction concept
-	#size=`du -sh $dest_loc`  ##If all files are successfully copied into destination location, then this script needs to show the copied file size
-	#set "$size"
-        echo -e "Backup process completed. . .\nBackedup $1 files to the destination folder."
+	echo -e "\nBackup in progress. . .\n"
+        cp -rfp $srcpath/ $destpath >> bkup.log 2&>1
+	set `tail -n 2 bkup.log`
+        echo -e "\nTransfered $2 $3 and the\c"
+        ddsize=`du -sh $destpath`
+        set $ddsize
+        echo -e "The disk contains $1 of data.\n\nBye Bye.\n"
+
 }
 
 libkup(){ #Local Incremental backup, Sync'ing the files in the folders using rsync by last modified and accessed time
         echo -e "Backup in progress. . ."
-        rsync -azh $src_loc/ $dest_loc >> /dev/null 2>&1
-        echo -e "Backup process completed. . .\n"
+        rsync -aphz --stats $srcpath/ $destpath >> bkup.log  2>&1
+	set `tail -n 2 bkup.log`
+        echo -e "\nTransfered $2 $3 and the\c"
+	ddsize=`du -sh $destpath`
+	set $ddsize
+	echo -e "The disk contains $1 of data.\n\nBye Bye.\n"
 }
+
+pbkup(){
+	#depending upon time and depending upon file type.
+	echo -e "Select an otpion from below.\n\nA.Backup by Date.\nB.Backup by File type.\nC.Backup by File size(greater than).\nD.Backup by File size(lesser then).\nE.Backup by Owner name.\n\nEnter Option[A/B/C/D/E] : \c"
+	read opt
+	echo "Type 'OK' to continue: \c"
+}
+
+
 
 lpbkup(){ #Local Partial backup, Selected type of contents and as by date last accessed or modified using amc-time
         echo -e "Backup in progress. . ."
-        #only the type of contents or date modified.
-        echo -e "Backup process completed. . .\n"
+	pbkup
+        #partial backup, depends up on time and file type
+	cp $srcloc/*.sh $destloc
 }
 
 
 cfbkup(){ #Cloud Full backup, Just copying everything to local drive.
         echo -e "Backup in progress. . ."
-        cp -rfp $src_loc/ $dest_loc
+        cp -rfp $srcpath/ $destpath
         #archive and extraction concept
         echo -e "Backup process completed. . .\n"
 }
@@ -70,14 +89,14 @@ backup_loc(){  ##Backup location selection, Local or cloud.
 	echo -e "\nSelect storage type.\nA. Local Storage(Device attached to this PC)\nB. Cloud Storage(To another server/storage devices.)"
 	echo -e "\nOption[A/B]: \c"
 	read strg_type
+	srcloc
+	destloc
 	case $strg_type in
 		'A' | 'a' )
-			echo -e "\nEnter device location: \c"
-			read dest_loc
-			echo -e "\nSelected storage type is 'Local Storage'. Device location is '$dest_loc'.\nThis method overwrites the previous duplicate files. Type 'YES' to continue: \c"
+			echo -e "\nSelected storage type is 'Local Storage'.\nSource location is '$srcpath'\nDestination location is '$destpath'.\n\nType 'OK' and press Enter: \c"
 			read ans
 			case $ans in
-				'YES' | 'Yes' | 'yes' )
+				'OK' | 'Ok' | 'ok' )
 					if [ "$bkup_opt" = 'A' -o "$bkup_opt" = 'a' ]
                         		then
 						lfbkup
@@ -97,8 +116,8 @@ backup_loc(){  ##Backup location selection, Local or cloud.
 
 		'B' | 'b' )
 			echo -e "\nEnter device location: \c"
-                        read dest_loc
-                        echo -e "\nSelected storage type is 'LOCAL STORAGE'. Device location is '$dest_loc'.\nType 'YES' to continue: \c"
+                        read destpath
+                        echo -e "\nSelected storage type is 'LOCAL STORAGE'. Device location is '$destpath'.\nType 'YES' to continue: \c"
                         read ans
                         case $ans in
                                 'YES' | 'Yes' | 'yes' )
@@ -124,29 +143,53 @@ backup_loc(){  ##Backup location selection, Local or cloud.
 		esac
 }
 
-location_select(){ ##Source path selection to take backup.
+srcloc(){ ##Source path selection to take backup.
 	echo -e "\nSpecify source path: \c"
-	read src_loc
-	ls $src_loc >>/dev/null 2>&1
+	read srcpath
+	ls $srcpath >>/dev/null 2>&1
 	if [ "$?" -eq 0 ]
 	then
-		echo -e "\nSpecfied path is: '$src_loc'\nType 'YES' to continue or press any key to re-specify the location again: \c"
+		echo -e "\nSource path is: '$srcpath'\nType 'YES' to continue or press any key to re-specify the location again: \c"
 	read loc_opt
 	case $loc_opt in
 		'YES' | 'Yes' | 'yes' )
-			echo -e "Backup process continuing. . ."
-			backup_loc
+			echo -e "\nSpecify Destination Path: \c"
 			;;
 		* )
 			echo -e "\nSpecify the location again."	
-			location_select
+			srcloc
 			;;
 	esac
 	else
 		echo -e "\nError : Path does not exist, try with different path."
-		location_select
+		srcloc
 	fi
 }
+
+
+destloc(){
+        read destpath
+        ls $destpath >>/dev/null 2>&1
+        if [ "$?" -eq 0 ]
+        then
+                echo -e "\nDestintion path is: '$destpath'\nType 'YES' to continue or press any key to re-specify the location again: \c"
+        read loc_opt
+        case $loc_opt in
+                'YES' | 'Yes' | 'yes' )
+                        echo -e "\nOK . . ."
+                        ;;
+                * )
+                        echo -e "\nSpecify the location again."
+			destloc
+                        ;;
+        esac
+        else
+                echo -e "\nError : Path does not exist, try with different path.\n\nSpecfiy destination path again: \c"
+                destloc
+        fi
+}
+
+
 
 
 
