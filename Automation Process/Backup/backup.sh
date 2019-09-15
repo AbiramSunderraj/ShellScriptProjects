@@ -1,7 +1,7 @@
 #Started @ 08/09/2019 by Abiram Sundarraj
 #set -x
 
-echo -e "\nWelocome to backup utility script. (v 0.1)"
+echo -e "\nWelocome to backup utility. (v 0.1)"
 
 source ./function.sh #Path to the backup function's source file.
 
