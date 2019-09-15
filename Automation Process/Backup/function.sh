@@ -50,9 +50,41 @@ libkup(){ #Local Incremental backup, Sync'ing the files in the folders using rsy
 
 pbkup(){
 	#depending upon time and depending upon file type.
-	echo -e "Select an otpion from below.\n\nA.Backup by Date.\nB.Backup by File type.\nC.Backup by File size(greater than).\nD.Backup by File size(lesser then).\nE.Backup by Owner name.\n\nEnter Option[A/B/C/D/E] : \c"
+	echo -e "Select an otpion from below.\n\nA. Backup by Date.\nB. Backup by File type.\nC. Backup by File size(greater than).\nD. Backup by File size(lesser then).\nE. Backup by Owner name.\n\nEnter Option[A/B/C/D/E] : \c"
 	read opt
-	echo "Type 'OK' to continue: \c"
+	case $opt in 
+		'a' | 'A' | 'b' | 'B' | 'c' | 'C' | 'd' | 'D' | 'e' | 'E' )
+			echo -e "Type 'OK' to continue: \c"
+			read copt
+				if [ "$copt" = "OK" -o "$copt" = "ok" -o "$copt" = "Ok" ]
+				then
+					case $opt in
+						'a' | 'A' )
+							echo -e "Backup by date.\n"
+							;;
+						'b' | 'B' )
+							echo -e "Backup by file type.\n"
+							;;
+						'c' | 'C' )
+							echo -e "Backup by file size greater than.\n"
+							;;
+						'd' | 'D' )
+							echo -e "Backup by file size lesser than.\n"
+							;;
+						'e' | 'E' )
+							echo -e "Backup by Owner name. \n"
+							;;
+					esac
+				else
+					echo "\nSelect a valid option."
+					pbkup
+				fi
+			;
+		* )
+			echo -e "\nError : Select a valid option.\n"
+			pbkup
+			;;
+	esac
 }
 
 
