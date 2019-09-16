@@ -102,13 +102,13 @@ part_bkup(){
                         fi
                         ;;
                 'e' | 'E' )
-                        echo -e "Backup by Owner name. \n"
+                        echo -e "Backup by user name. \n"
 			src_loc
 			if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
                         then
-                                LPO
+                                LPN
                         else
-                                CPO
+                                CPN
                         fi
                         ;;
 		* )
@@ -189,9 +189,12 @@ set $ddsize
 echo -e "the disk contains $1 of data.\n\nBackup successfully completed.\n\n"
 }
 
-LPO(){
-echo "By owner name." 
-
+LPN(){
+echo -e "Enter a particular username to begin backup: \c" 
+read uname
+find $srcpath -user "$uname" -exec cp -r {} $destpath \;ddsize=`du -sh $destpath`
+set $ddsize
+echo -e "the disk contains $1 of data.\n\nBackup successfully completed.\n\n"
 }
 
 
