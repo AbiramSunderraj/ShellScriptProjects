@@ -12,11 +12,21 @@ str_loc(){  ##Backup location selection, Local or cloud.
 			bkup_type
                         ;;
                 *)
-                        echo -e "\nError : Incorrect Option. Choose a correct backup method."
+                        echo -e "\nError: Incorrect Option. Choose a correct backup method."
                         str_loc
                         ;;
                 esac
 }
+
+cauth{
+echo -e "Enter server/network storage IP address: \c"
+read ipaddr #check wheather the host is up or not and use exit status to determine.
+echo -e "\n\nEnter username to login: \c"
+read cuname
+echo -e "\n\nEnter Password for user $cuname: \c"
+read $cpasswd
+}
+
 
 bkup_type(){ # Select the type of backup. Full, Incremental and Partial
         echo -e "\nSelect the type of backup\nA. Full Backup\nB. Incremental Backup\nC. Partial Backup\n\nOption[A/B/C]:\c"
@@ -51,18 +61,18 @@ bkup_type(){ # Select the type of backup. Full, Incremental and Partial
                         fi
                         ;;
                 *)
-                        echo -e "\nError : Incorrect Option. Choose a correct backup type."
+                        echo -e "\nError: Incorrect Option. Choose a correct backup type."
                         bkup_type
         esac
 }
 
 
 part_bkup(){
-	echo -e "Choose an option from below.\n\nA. Backup by Date.\nB. Backup by File type.\nC. Backup by File size(greater than).\nD. Backup by File size(lesser then).\nE. Backup by Owner name.\n\nEnter Option[A/B/C/D/E] : \c"
+	echo -e "\nChoose an option from below.\nA. Backup by Date.\nB. Backup by File type.\nC. Backup by File size.\nD. Backup by user name.\n\nEnter Option[A/B/C/D] : \c"
         read opt
 	case $opt in
                 'a' | 'A' )
-                        echo -e "Backup by date.\n"
+                        echo -e "\nBackup by date.\n"
 			src_loc
 			if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
 			then
@@ -82,7 +92,7 @@ part_bkup(){
                         fi
                         ;;
                 'c' | 'C' )
-                        echo -e "Backup by file size greater than.\n"
+                        echo -e "\nBackup by file size.\n"
 			src_loc
 			if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
                         then
@@ -92,17 +102,7 @@ part_bkup(){
                         fi
                         ;;
                 'd' | 'D' )
-                        echo -e "Backup by file size lesser than.\n"
-			src_loc
-			if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
-                        then
-                                LPS
-                        else
-                                CPS
-                        fi
-                        ;;
-                'e' | 'E' )
-                        echo -e "Backup by user name. \n"
+                        echo -e "\nBackup by user name.\n"
 			src_loc
 			if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
                         then
@@ -112,20 +112,20 @@ part_bkup(){
                         fi
                         ;;
 		* )
-			echo -e "\nError : Incorrect option."
+			echo -e "\nError: Incorrect option."
 			part_bkup
         esac
 }
 
 src_loc(){ ##Source path selection to take backup.
-        echo -e "\nSpecify source path: \c"
+        echo -e "Specify source path: \c"
         read srcpath
         ls $srcpath >> /dev/null 2>&1
         if [ "$?" -eq 0 ]
         then
                 dest_loc
         else
-                echo -e "\nError : Path does not exist, try with different path."
+                echo -e "\nError: Path does not exist, try with different path."
                 src_loc
         fi
 }
@@ -141,15 +141,15 @@ dest_loc(){
         case $loc_opt in
                 'YES' | 'Yes' | 'yes' )
 			sleep 2
-                        echo -e "\nLocation verified. . .\n"
+                        echo -e "\nLocations verified. . .\n"
                         ;;
                 * )
                         echo -e "\nSpecify the destination location again."
-                        dest_loc
+                        src_loc
                         ;;
         esac
         else
-                echo -e "\nError : Path does not exist, try with different path.\n\n"
+                echo -e "\nError: Path does not exist, try with different path.\n\n"
                 dest_loc
         fi
 }
@@ -160,52 +160,52 @@ dest_loc(){
 LFB(){ #Local full backup
 echo -e "\nBackup in progress. . .\n"
 cp -rfp $srcpath/ $destpath > bkup.log 2>&1
-set `tail -n 2 bkup.log`
-echo -e "\nTransfered $2 $3 and\c"
-ddsize=`du -sh $destpath`
-set $ddsize
-echo -e "the disk contains $1 of data.\n\nBackup successfully completed."
+#ddsize=`du -sh $destpath`
+#set $ddsize
+echo -e "Backup successfully completed.\n\n"
 }
 
-LIB(){ #Local Incremental Backup
+LIB(){ #Local Incremental Backup(Have to work on)
 echo -e "Backup in progress. . ."
 rsync -aphz --stats $srcpath/ $destpath >bkup.log 2>&1
-set `tail -n 2 bkup.log`
-echo -e "\nTransfered $2 $3 and \c"
-ddsize=`du -sh $destpath`
-set $ddsize
-echo -e "the disk contains $1 of data.\n\nBackup successfully completed."
+#ddsize=`du -sh $destpath`
+#set $ddsize
+echo -e "Backup successfully completed.\n\n"
 }
 
-LPT(){ #Local Partial backup by Time
+LPT(){ #Local Partial backup by Type
 echo -e "Enter the extension of a file (Example: doc,docx,pdf): \c"
 read fext
-find $srcpath -type f -iname "*.$fext" > .filelog
-set `wc -l .filelog`
-echo -e "Total $fext files found $1. Backup is running.\n\n"
-find $srcpath -type f -iname "*.$fext" -exec cp -r {} $destpath \;
-ddsize=`du -sh $destpath`
-set $ddsize
-echo -e "the disk contains $1 of data.\n\nBackup successfully completed.\n\n"
+find $srcpath -type f -iname "*.$fext" -exec rsync -raphz {} $destpath \;
+echo -e "Backup successfully completed.\n\n"
 }
 
 LPN(){
 echo -e "Enter a particular username to begin backup: \c" 
 read uname
-find $srcpath -user "$uname" -exec cp -r {} $destpath \;ddsize=`du -sh $destpath`
-set $ddsize
-echo -e "the disk contains $1 of data.\n\nBackup successfully completed.\n\n"
+find $srcpath -user "$uname" -exec rsync -raphz {} $destpath \;
+echo -e "\nBackup successfully completed.\n\n"
 }
-
 
 LPS(){
- echo -e "\nOK.."
-
+echo -e "Enter the file size (Example: +10M for files greater than 10 MB or -10M fsize lesser than 10 MB): \c"
+read fsize
+case $fsize in
+	+*k | +*M | +*G | -*k | -*M | -*G)
+		find $srcpath -size $fsize -exec rsync -raphz {} $destpath \;
+		echo -e "\nBackup successfully completed. . .\n\n"
+	;;
+*)
+		echo -e "\nError: Incorrect option.\n"
+		LPS
+esac
 }
 
-LPD(){
- echo -e "\nOK.."
-
+LPD(){ #Local partial backup by modifed date.
+echo -e "\nEnter number of days to take backup from: \c"
+read days
+find $srcpath -type f -ctime -$days -exec rsync -raphz {} $destpath \;
+echo -e "\nBackup successfully completed. . .\n\n"
 }
 
 CFB(){
