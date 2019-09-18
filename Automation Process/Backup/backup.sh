@@ -11,6 +11,7 @@ user=`whoami`             #Checking the username of the current tty user.
 if [ "$user" = "root" ]   #run the script if it is root user, else exit.
 then
 str_loc  #Provide the function names below.
+#dschk
 else
 echo -e "\n##Run this script as a root user.##\n"
 fi

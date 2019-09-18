@@ -1,85 +1,69 @@
+sending incremental file list
+./
+01
+              0 100%    0.00kB/s    0:00:00 (xfr#1, to-chk=24/26)
+02
+              0 100%    0.00kB/s    0:00:00 (xfr#2, to-chk=23/26)
+03
+              0 100%    0.00kB/s    0:00:00 (xfr#3, to-chk=22/26)
+04
+              0 100%    0.00kB/s    0:00:00 (xfr#4, to-chk=21/26)
+05
+              0 100%    0.00kB/s    0:00:00 (xfr#5, to-chk=20/26)
+06
+              0 100%    0.00kB/s    0:00:00 (xfr#6, to-chk=19/26)
+07
+              0 100%    0.00kB/s    0:00:00 (xfr#7, to-chk=18/26)
+08
+              0 100%    0.00kB/s    0:00:00 (xfr#8, to-chk=17/26)
+09
+              0 100%    0.00kB/s    0:00:00 (xfr#9, to-chk=16/26)
+10
+              0 100%    0.00kB/s    0:00:00 (xfr#10, to-chk=15/26)
+11
+              0 100%    0.00kB/s    0:00:00 (xfr#11, to-chk=14/26)
+12
+              0 100%    0.00kB/s    0:00:00 (xfr#12, to-chk=13/26)
+13
+              0 100%    0.00kB/s    0:00:00 (xfr#13, to-chk=12/26)
+14
+              0 100%    0.00kB/s    0:00:00 (xfr#14, to-chk=11/26)
+15
+              0 100%    0.00kB/s    0:00:00 (xfr#15, to-chk=10/26)
+16
+              0 100%    0.00kB/s    0:00:00 (xfr#16, to-chk=9/26)
+17
+              0 100%    0.00kB/s    0:00:00 (xfr#17, to-chk=8/26)
+18
+              0 100%    0.00kB/s    0:00:00 (xfr#18, to-chk=7/26)
+19
+              0 100%    0.00kB/s    0:00:00 (xfr#19, to-chk=6/26)
+20
+              0 100%    0.00kB/s    0:00:00 (xfr#20, to-chk=5/26)
+21
+              0 100%    0.00kB/s    0:00:00 (xfr#21, to-chk=4/26)
+22
+              0 100%    0.00kB/s    0:00:00 (xfr#22, to-chk=3/26)
+23
+              0 100%    0.00kB/s    0:00:00 (xfr#23, to-chk=2/26)
+24
+              0 100%    0.00kB/s    0:00:00 (xfr#24, to-chk=1/26)
+25
+              0 100%    0.00kB/s    0:00:00 (xfr#25, to-chk=0/26)
 
-Number of files: 35 (reg: 34, dir: 1)
-Number of created files: 24 (reg: 24)
+Number of files: 26 (reg: 25, dir: 1)
+Number of created files: 25 (reg: 25)
 Number of deleted files: 0
-Number of regular files transferred: 24
-Total file size: 12.36K bytes
+Number of regular files transferred: 25
+Total file size: 0 bytes
 Total transferred file size: 0 bytes
 Literal data: 0 bytes
 Matched data: 0 bytes
 File list size: 0
 File list generation time: 0.001 seconds
 File list transfer time: 0.000 seconds
-Total bytes sent: 1.44K
-Total bytes received: 475
+Total bytes sent: 1.28K
+Total bytes received: 494
 
-sent 1.44K bytes  received 475 bytes  3.82K bytes/sec
-total size is 12.36K  speedup is 6.47
-
-Number of files: 35 (reg: 34, dir: 1)
-Number of created files: 22 (reg: 22)
-Number of deleted files: 0
-Number of regular files transferred: 22
-Total file size: 12.36K bytes
-Total transferred file size: 12.36K bytes
-Literal data: 12.36K bytes
-Matched data: 0 bytes
-File list size: 0
-File list generation time: 0.001 seconds
-File list transfer time: 0.000 seconds
-Total bytes sent: 7.26K
-Total bytes received: 437
-
-sent 7.26K bytes  received 437 bytes  15.39K bytes/sec
-total size is 12.36K  speedup is 1.61
-
-Number of files: 35 (reg: 34, dir: 1)
-Number of created files: 0
-Number of deleted files: 0
-Number of regular files transferred: 0
-Total file size: 12.36K bytes
-Total transferred file size: 0 bytes
-Literal data: 0 bytes
-Matched data: 0 bytes
-File list size: 0
-File list generation time: 0.001 seconds
-File list transfer time: 0.000 seconds
-Total bytes sent: 565
-Total bytes received: 12
-
-sent 565 bytes  received 12 bytes  1.15K bytes/sec
-total size is 12.36K  speedup is 21.43
-
-Number of files: 35 (reg: 34, dir: 1)
-Number of created files: 0
-Number of deleted files: 0
-Number of regular files transferred: 0
-Total file size: 12.36K bytes
-Total transferred file size: 0 bytes
-Literal data: 0 bytes
-Matched data: 0 bytes
-File list size: 0
-File list generation time: 0.001 seconds
-File list transfer time: 0.000 seconds
-Total bytes sent: 565
-Total bytes received: 12
-
-sent 565 bytes  received 12 bytes  1.15K bytes/sec
-total size is 12.36K  speedup is 21.43
-
-Number of files: 35 (reg: 34, dir: 1)
-Number of created files: 0
-Number of deleted files: 0
-Number of regular files transferred: 0
-Total file size: 12.36K bytes
-Total transferred file size: 0 bytes
-Literal data: 0 bytes
-Matched data: 0 bytes
-File list size: 0
-File list generation time: 0.001 seconds
-File list transfer time: 0.000 seconds
-Total bytes sent: 565
-Total bytes received: 12
-
-sent 565 bytes  received 12 bytes  1.15K bytes/sec
-total size is 12.36K  speedup is 21.43
+sent 1.28K bytes  received 494 bytes  3.54K bytes/sec
+total size is 0  speedup is 0.00

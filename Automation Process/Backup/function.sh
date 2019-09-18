@@ -9,6 +9,7 @@ str_loc(){  ##Backup location selection, Local or cloud.
                         ;;
                 'B' | 'b' )
                         echo -e "\nSelected backup method is 'CLOUD backup'."
+			cauth
 			bkup_type
                         ;;
                 *)
@@ -18,13 +19,11 @@ str_loc(){  ##Backup location selection, Local or cloud.
                 esac
 }
 
-cauth{
+cauth(){ #Cloud auth details
 echo -e "Enter server/network storage IP address: \c"
 read ipaddr #check wheather the host is up or not and use exit status to determine.
 echo -e "\n\nEnter username to login: \c"
 read cuname
-echo -e "\n\nEnter Password for user $cuname: \c"
-read $cpasswd
 }
 
 
@@ -118,7 +117,7 @@ part_bkup(){
 }
 
 src_loc(){ ##Source path selection to take backup.
-        echo -e "Specify source path: \c"
+        echo -e "\nSpecify source path: \c"
         read srcpath
         ls $srcpath >> /dev/null 2>&1
         if [ "$?" -eq 0 ]
@@ -144,7 +143,7 @@ dest_loc(){
                         echo -e "\nLocations verified. . .\n"
                         ;;
                 * )
-                        echo -e "\nSpecify the destination location again."
+                        echo -e "Specify the destination location again."
                         src_loc
                         ;;
         esac
@@ -158,16 +157,16 @@ dest_loc(){
 ##Actual functions
 
 LFB(){ #Local full backup
-echo -e "\nBackup in progress. . .\n"
-cp -rfp $srcpath/ $destpath > bkup.log 2>&1
-#ddsize=`du -sh $destpath`
-#set $ddsize
+set `find $srcpath -type f -iname "*" -exec du -ch {} + | grep total$`
+echo -e "Total file size to be transfered $1.\n\nBackup in progress. . .\n"
+rsync -raphz --progress $srcpath/ $destpath #>bkup.log 2>&1
 echo -e "Backup successfully completed.\n\n"
 }
 
 LIB(){ #Local Incremental Backup(Have to work on)
-echo -e "Backup in progress. . ."
-rsync -aphz --stats $srcpath/ $destpath >bkup.log 2>&1
+read -n1 -p "Press any key to continue..."
+echo -e "Backup in progress. . .\n"
+rsync -raphz --progress $srcpath/ $destpath #>bkup.log 2>&1
 #ddsize=`du -sh $destpath`
 #set $ddsize
 echo -e "Backup successfully completed.\n\n"
@@ -176,14 +175,14 @@ echo -e "Backup successfully completed.\n\n"
 LPT(){ #Local Partial backup by Type
 echo -e "Enter the extension of a file (Example: doc,docx,pdf): \c"
 read fext
-find $srcpath -type f -iname "*.$fext" -exec rsync -raphz {} $destpath \;
+find $srcpath -type f -iname "*.$fext" -exec rsync -raphz --progress {} $destpath \;
 echo -e "Backup successfully completed.\n\n"
 }
 
 LPN(){
 echo -e "Enter a particular username to begin backup: \c" 
 read uname
-find $srcpath -user "$uname" -exec rsync -raphz {} $destpath \;
+find $srcpath -user "$uname" -exec rsync -raphz --progress {} $destpath \;
 echo -e "\nBackup successfully completed.\n\n"
 }
 
@@ -192,7 +191,7 @@ echo -e "Enter the file size (Example: +10M for files greater than 10 MB or -10M
 read fsize
 case $fsize in
 	+*k | +*M | +*G | -*k | -*M | -*G)
-		find $srcpath -size $fsize -exec rsync -raphz {} $destpath \;
+		find $srcpath -size $fsize -exec rsync -raphz --progress {} $destpath \;
 		echo -e "\nBackup successfully completed. . .\n\n"
 	;;
 *)
@@ -204,13 +203,14 @@ esac
 LPD(){ #Local partial backup by modifed date.
 echo -e "\nEnter number of days to take backup from: \c"
 read days
-find $srcpath -type f -ctime -$days -exec rsync -raphz {} $destpath \;
+find $srcpath -type f -ctime -$days -exec rsync -raphz --progress {} $destpath \;
 echo -e "\nBackup successfully completed. . .\n\n"
 }
 
 CFB(){
- echo -e "\nOK.."
-
+echo -e "Backup in progress. . .\n"
+rsync -raphz --progress ssh $srcpath/ $uname@$ipaddr:$destpath #>bkup.log 2>&1
+echo -e "Backup successfully completed.\n\n"
 }
 
 CIB(){
@@ -235,5 +235,20 @@ CPS(){
 
 CPD(){
  echo -e "\nOK.."
-
 }
+
+
+
+dschk(){
+dss=`df -h $destpath` 
+echo -e "$dss"
+set `echo -e "$dss" | tail -n 1`
+echo -e "Available disk space in destination path is $4"
+}
+
+
+
+
+#NOTES:
+
+#1. Disk space check.
