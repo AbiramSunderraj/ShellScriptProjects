@@ -5,10 +5,12 @@ str_loc(){  ##Backup location selection, Local or cloud.
         case $strg_type in
                 'A' | 'a' )
                         echo -e "\nSelected backup method is 'LOCAL backup'."
+                        bmeth="Local"
 			bkup_type
                         ;;
                 'B' | 'b' )
                         echo -e "\nSelected backup method is 'CLOUD backup'."
+                        bmeth="Cloud"
 			cauth
 			bkup_type
                         ;;
@@ -24,6 +26,7 @@ echo -e "Enter server/network storage IP address: \c"
 read ipaddr #check wheather the host is up or not and use exit status to determine.
 echo -e "\n\nEnter username to login: \c"
 read cuname
+echo -e "\n\nEnter user password to connect: \c"
 }
 
 
@@ -35,6 +38,7 @@ bkup_type(){ # Select the type of backup. Full, Incremental and Partial
                         if [ "$bkup_opt" = 'A' -o "$bkup_opt" = 'a' ]
                         then
                                 echo -e "\nSelected Backup Type is FULL."
+				bopt="Full"
 				src_loc
                                 opt=""
 				if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
@@ -46,6 +50,7 @@ bkup_type(){ # Select the type of backup. Full, Incremental and Partial
                         elif [ "$bkup_opt" = 'B' -o "$bkup_opt" = 'b' ]
                         then
                                 echo -e "\nSelected Backup Type is INCREMENTAL."
+				bopt="Incremental"
 				src_loc
                                 opt=""
 				if [ "$strg_type" = 'A' -o "$strg_type" = 'a' ]
@@ -56,6 +61,7 @@ bkup_type(){ # Select the type of backup. Full, Incremental and Partial
                         	fi
                         else [ "$bkup_opt" = 'C' -o "$bkup_opt" = 'c' ]
                                 echo -e "\nSelected Backup Type is PARTIAL."
+				bopt="Partial"
 				part_bkup
                         fi
                         ;;
@@ -139,8 +145,9 @@ dest_loc(){
         read loc_opt
         case $loc_opt in
                 'YES' | 'Yes' | 'yes' )
-			sleep 2
+			sleep 1
                         echo -e "\nLocations verified. . .\n"
+                        dschk
                         ;;
                 * )
                         echo -e "Specify the destination location again."
@@ -158,18 +165,24 @@ dest_loc(){
 
 LFB(){ #Local full backup
 set `find $srcpath -type f -iname "*" -exec du -ch {} + | grep total$`
-echo -e "Total file size to be transfered $1.\n\nBackup in progress. . .\n"
-rsync -raphz --progress $srcpath/ $destpath #>bkup.log 2>&1
-echo -e "Backup successfully completed.\n\n"
+tfsize=$1
+echo -e "Total file size to be transfered $1 (approx.)\n"
+read -n1 -p "Press any key to continue..."
+echo -e "\nBackup in progress. . .\n"
+cp -rfp $srcpath/ $destpath
+echo -e "\n\nBackup successfully completed.\n\n"
+bkup_info
 }
 
-LIB(){ #Local Incremental Backup(Have to work on)
+LIB(){ #Local Incremental Backup
+set `find $srcpath -type f -iname "*" -exec du -ch {} + | grep total$`
+tfsize=$1
+echo -e "Total file size to be transfered is $1 (approx.)" 
 read -n1 -p "Press any key to continue..."
-echo -e "Backup in progress. . .\n"
-rsync -raphz --progress $srcpath/ $destpath #>bkup.log 2>&1
-#ddsize=`du -sh $destpath`
-#set $ddsize
+echo -e "\nBackup in progress. . .\n"
+rsync -raphz --progress $srcpath/ $destpath 
 echo -e "Backup successfully completed.\n\n"
+bkup_info
 }
 
 LPT(){ #Local Partial backup by Type
@@ -180,7 +193,7 @@ echo -e "Backup successfully completed.\n\n"
 }
 
 LPN(){
-echo -e "Enter a particular username to begin backup: \c" 
+echo -e "Enter a username to begin backup: \c" 
 read uname
 find $srcpath -user "$uname" -exec rsync -raphz --progress {} $destpath \;
 echo -e "\nBackup successfully completed.\n\n"
@@ -240,15 +253,23 @@ CPD(){
 
 
 dschk(){
-dss=`df -h $destpath` 
-echo -e "$dss"
+dss=`df -h $destpath`
 set `echo -e "$dss" | tail -n 1`
-echo -e "Available disk space in destination path is $4"
+echo -e "\nAvailable disk space in destination path is $4"
 }
 
-
-
-
-#NOTES:
-
-#1. Disk space check.
+bkup_info(){
+ls bkup.info >>bkup.log 2>&1
+if [ "$?" -ne 0 ]
+then
+	touch bkup.info
+	echo "S.No;Backup_method;Backup_option;Date;Time;Source;Destination;Backup_size" | column -t >> bkup.info
+	count=0
+bkup_info
+else
+	sno=`expr $count + 1`
+	cdate=`date "+%b-%d-%Y"`
+	ctime=`date "+%H:%M:%S"`
+	echo "$sno;$bmeth;$bopt;$cdate;$ctime;$srcpath;$destpath;$tfsize" | column -t >> bkup.info
+fi
+}
